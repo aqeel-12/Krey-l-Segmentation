@@ -26,10 +26,10 @@ def segment_to_tag(input_string):
             separated=True
             continue
         if separated:
-            result.append("B")
+            result.append(0) #B is 0
             separated = False
         else:
-            result.append("I")
+            result.append(1) #I is 1
     return result
 
 def tag_to_segment(bi_tags, word):
@@ -48,13 +48,4 @@ def tag_to_segment(bi_tags, word):
         spelling.append(cur_let)
         last_tag = cur_tag
     return spelling[1:]
-        
-            
 
-
-
-
-
-
-    
-    pass
