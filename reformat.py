@@ -26,10 +26,10 @@ def segment_to_tag(input_string):
             separated=True
             continue
         if separated:
-            result.append(0) #B is 0
+            result.append("B") #B is 0
             separated = False
         else:
-            result.append(1) #I is 1
+            result.append("I") #I is 1
     return result
 
 def tag_to_segment(bi_tags, word):

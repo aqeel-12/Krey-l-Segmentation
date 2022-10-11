@@ -11,8 +11,10 @@ class WordSegPreProcessing():
         self.x, self.y = self.extract_pairs(x,y)
 
         self.vocab = list(set(w for i in self.x for w in i))
-       # self.index_vocab = {w: i for i,
-       #                     w in enumerate(self.vocab)}  # vocab index
+        self.all_tags = list(set(w for i in self.y for w in i))
+        self.index_vocab = {w: i for i,
+                            w in enumerate(self.vocab)}  # vocab index
+        self.index_tag = {t: i for i,t in enumerate(self.all_tags)}
 
 
     def extract_pairs(self,x,y):
@@ -48,6 +50,12 @@ class WordSegPreProcessing():
         return features_of_x
     def generate_features(self, x):
         return list(map(lambda y: self.apply_features(y), x))
+    def let2index(self, x):
+        return [self.index_vocab[w] for w in x]
+    def tag2index(self, y):
+        return [self.index_tag[w] for w in y]
+
+
 """
     def create_n_gram(self,corpus, n=2):
         n_gram = []
