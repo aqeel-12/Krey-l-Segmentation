@@ -98,16 +98,71 @@ class UnSupervised:
                             transition_aux[state2][state] += prev_step * \
                                 beta_now/(sum(prod_alpha_beta)[i])
             #print(tmat[state2][state])
+            new_tmat = np.zeros((self.num_states, self.num_states))
             for si in range(self.num_states):
                 norm_factor = sum(prod_alpha_beta_normed[si])
                 for sj in range(self.num_states):
-                    tmat[sj][si] = transition_aux[si][sj]/norm_factor
+                    new_tmat[sj][si] = transition_aux[si][sj]/norm_factor
                 for o in set(o_seq):
                     #print(si, o, emission_aux[si][o]/norm_factor)
-                    emission[si][o] = emission_aux[si][o]/norm_factor
+                    if np.isnan(emission_aux[si][o]/norm_factor):
+                        emission[si][o] = 0
+                    else:
+                        emission[si][o] = emission_aux[si][o]/norm_factor
+            if not np.isnan(sum(sum(new_tmat))): #dont change the tmat if it is not 0
+                tmat = new_tmat
             initial = [i[0] for i in prod_alpha_beta_normed]
             end = [term[-1]/sum(prod_alpha_beta_normed[si])
                    for si, term in enumerate(prod_alpha_beta_normed)]
             #print("this is tmat", self.tmat)
         return tmat, emission, initial, end
         #return tmat, emit, start, stop
+
+    #' Authors: the following 3 mtehods are borrowed from OmarAlAkkad and a8nguyen from challenge 2!
+
+
+    def _argmax(self, V, tag_list, t, i, transition_mat):
+        ans = -1
+        best = None
+        for s in tag_list:
+            temp = V[i-1][s] * transition_mat[t][s]
+            if temp > ans:
+                ans = temp
+                best = s
+        return (best, ans)
+
+
+    def _get_best_tag(self, sent, V, B, tags):
+        best_ending = None
+        best_max = -1
+
+        for tag in tags:
+            if V[len(sent) - 1][tag] > best_max:
+                best_max = V[len(sent) - 1][tag]
+                best_ending = tag
+        seq = [best_ending]
+        for i in reversed(range(1, len(sent))):
+            prev = B[i][seq[-1]]
+            #print( seq[-1])
+            seq.append(prev)
+        #print(len(seq), len(sent))
+        return seq[::-1]
+
+
+    def viterbi(self, words, emission_vectors, transition_mat, sentence_dict):
+        V = defaultdict(lambda: defaultdict(float))
+        B = defaultdict(lambda: defaultdict(str))
+        tag_list = sentence_dict.keys()
+
+        for t in tag_list:
+            V[0][t] = sentence_dict[t] * emission_vectors[t][words[0]]
+
+        for i in range(1, len(words)):
+            for t in tag_list:
+                pair = self._argmax(V, tag_list, t, i, transition_mat)
+                B[i][t] = pair[0]
+                #print(words[i])
+                V[i][t] = pair[1]*emission_vectors[t][words[i]]
+
+        final_labels = self._get_best_tag(words, V, B, tag_list)
+        return final_labels
