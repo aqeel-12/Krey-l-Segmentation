@@ -15,6 +15,8 @@ class WordSegPreProcessing():
         self.index_vocab = {w: i for i,
                             w in enumerate(self.vocab)}  # vocab index
         self.index_tag = {t: i for i,t in enumerate(self.all_tags)}
+        self.index2tag = {i: t for i, t in enumerate(self.all_tags)}
+
 
 
     def extract_pairs(self,x,y):

@@ -47,5 +47,5 @@ def tag_to_segment(bi_tags, word):
 
         spelling.append(cur_let)
         last_tag = cur_tag
-    return spelling[1:]
+    return ''.join(spelling[1:])
 

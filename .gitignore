@@ -5,6 +5,7 @@ snippet/
 *$py.class
 
 #no data
+*.txt
 *.tsv
 *.zip
 # C extensions
